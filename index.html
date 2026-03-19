@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerador de Nomes Criativos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2c3e50, #8e44ad);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+            padding: 50px 20px;
+        }
+
+        h1 {
+            color: #fff;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .container {
+            background-color: rgba(255,255,255,0.95);
+            padding: 30px 40px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            text-align: center;
+        }
+
+        input[type="text"], select {
+            width: 80%;
+            padding: 12px;
+            margin: 10px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            padding: 12px 20px;
+            margin: 10px 5px;
+            font-size: 16px;
+            background-color: #8e44ad;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #e91e63;
+            color: #fff;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .nome {
+            background-color: #2c3e50;
+            color: #fff;
+            padding: 8px 12px;
+            margin: 5px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .nome:hover {
+            background-color: #8e44ad;
+            color: #fff;
+        }
+
+        @media(max-width: 500px){
+            input[type="text"], select, button{
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gerador de Nomes Criativos</h1>
+
+    <div class="container">
+        <input type="text" id="palavra" placeholder="Digite uma palavra-chave">
+        <br>
+        <select id="categoria">
+            <option value="tech">Tech</option>
+            <option value="lifestyle">Lifestyle</option>
+            <option value="games">Games</option>
+        </select>
+        <br>
+        <button onclick="gerarNome()">Gerar Nomes</button>
+        <button onclick="copiarTodos()">Copiar Todos</button>
+        <button onclick="exportarTXT()">Exportar TXT</button>
+
+        <div id="resultado"></div>
+    </div>
+
+    <script>
+        function gerarNome() {
+            var palavra = document.getElementById("palavra").value.trim();
+            if (!palavra) { alert("Digite uma palavra para gerar nomes!"); return; }
+
+            var categoria = document.getElementById("categoria").value;
+            var conectores = ["", "-", "+", "_"];
+            var prefixos = [], sufixos = [];
+
+            if (categoria === "tech") {
+                prefixos = ["Neo","Ultra","Max","Smart","Cyber","Quantum","Techno","Alpha","NextGen"];
+                sufixos = ["Tech","Digital","Lab","Hub","Works","Solutions","Edge","System"];
+            } else if (categoria === "lifestyle") {
+                prefixos = ["Eco","Viva","Zen","Nova","Happy","Pure","Alpha","Life"];
+                sufixos = ["Studio","Life","Point","Zone","Hub","World","Space"];
+            } else if (categoria === "games") {
+                prefixos = ["Hyper","Next","Power","Max","Dark","Neo","Pro","Ultra"];
+                sufixos = ["X","Arena","Zone","Master","Quest","Factory","Hub"];
+            }
+
+            var resultado = [];
+            var resultadoHTML = "";
+
+            while (resultado.length < 12) {
+                var tipo = Math.floor(Math.random()*3);
+                var con = conectores[Math.floor(Math.random()*conectores.length)];
+                var nome = "";
+
+                if (tipo === 0) nome = prefixos[Math.floor(Math.random()*prefixos.length)] + con + palavra;
+                else nome = palavra + con + sufixos[Math.floor(Math.random()*sufixos.length)];
+
+                if (!resultado.includes(nome)){
+                    resultado.push(nome);
+                    resultadoHTML += "<div class='nome' onclick='copiarNome(this)'>" + nome + "</div>";
+                }
+            }
+
+            document.getElementById("resultado").innerHTML = resultadoHTML;
+        }
+
+        function copiarNome(element){
+            var temp = document.createElement("input");
+            temp.value = element.innerText;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            alert("Nome copiado: " + element.innerText);
+        }
+
+        function copiarTodos(){
+            var nomes = document.querySelectorAll('.nome');
+            var texto = Array.from(nomes).map(n => n.innerText).join(', ');
+            var temp = document.createElement("input");
+            temp.value = texto;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand("copy");
+            document.body.removeChild(temp);
+            alert("Todos os nomes copiados!");
+        }
+
+        function exportarTXT(){
+            var nomes = document.querySelectorAll('.nome');
+            var texto = Array.from(nomes).map(n => n.innerText).join("\n");
+            var blob = new Blob([texto], {type: "text/plain;charset=utf-8"});
+            var link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "nomes_gerados.txt";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+
+</body>
+</html>
